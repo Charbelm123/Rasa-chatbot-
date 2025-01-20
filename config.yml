@@ -1,0 +1,31 @@
+recipe: default.v1
+assistant_id: form_bot
+language: en
+
+pipeline:
+  # purpose: splits the input text into individuals tokens
+  #limitations: does not handle punctuation well
+  - name: WhitespaceTokenizer    
+  # Purpose: Extracts lexical (word-based) and syntactic (structure-based) features from the tokens.
+  # Features: Word patterns, capitalization, prefixes, suffixes, etc.
+  - name: LexicalSyntacticFeaturizer
+  # Purpose: Converts text into a numerical representation using a bag-of-words or n-grams approach.
+  # Token Pattern: The token_pattern here matches words (alphanumeric sequences).
+  - name: CountVectorsFeaturizer
+    token_pattern: (?u)\b\w+\b
+    # Purpose: Extracts predefined entities (like numbers, dates, times, etc.) using the Duckling library.
+    # Dimensions: Specifies the types of entities to extract (number in your case).
+  - name: DucklingEntityExtractor
+    url: http://localhost:8000
+    dimensions:
+      - number
+  - name: DIETClassifier
+    epochs: 100
+    run_eagerly: True
+  - name: EntitySynonymMapper
+
+policies:
+  - name: TEDPolicy
+    epochs: 100
+  - name: AugmentedMemoizationPolicy
+  - name: RulePolicy
