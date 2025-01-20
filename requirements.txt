@@ -1,0 +1,2 @@
+rasa[full]
+psycopg2
